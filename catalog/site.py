@@ -43,7 +43,46 @@ from .report import Report
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
-REPO_URL = "https://github.com/darkxex/ps5-homebrew-catalog"
+# The catalog's identity: catalog.json at the root of the repository (its name and, optionally, its
+# maintainer and repository), completed at build time from the repository the site is built from.
+CONFIG = ROOT / "catalog.json"
+
+
+def _config() -> dict:
+    try:
+        data = json.loads(CONFIG.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _repository_url(config: dict) -> str:
+    """The repository on GitHub: the one Actions builds, else catalog.json's, else git's origin."""
+    slug = os.environ.get("GITHUB_REPOSITORY", "")
+    if re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9._-]+", slug):
+        return f"https://github.com/{slug}"
+    configured = str(config.get("repository") or "").strip().rstrip("/")
+    if re.fullmatch(r"https://github\.com/[A-Za-z0-9-]+/[A-Za-z0-9._-]+", configured):
+        return configured
+    try:  # _git is defined further down; this runs when the module loads
+        origin = subprocess.run(["git", "remote", "get-url", "origin"], cwd=ROOT, check=True,
+                                capture_output=True, text=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        origin = ""
+    match = re.search(r"github\.com[:/]([A-Za-z0-9-]+)/([A-Za-z0-9._-]+?)(?:\.git)?$", origin)
+    if match:
+        return f"https://github.com/{match.group(1)}/{match.group(2)}"
+    return "https://github.com/darkxex/ps5-homebrew-catalog"
+
+
+_CONFIG = _config()
+REPO_URL = _repository_url(_CONFIG)
+REPO_OWNER, REPO_NAME = REPO_URL.rsplit("/", 2)[-2:]
+# Who maintains the catalog: catalog.json's maintainer, else the repository's owner on GitHub.
+MAINTAINER = str(_CONFIG.get("maintainer") or "").strip().lstrip("@") or REPO_OWNER
+MAINTAINER_URL = f"https://github.com/{MAINTAINER}"
+# What the site calls itself: catalog.json's name, else the repository's name.
+CATALOG_NAME = str(_CONFIG.get("name") or "").strip() or REPO_NAME
 # Likes and comments, written by the Comments workflow to a branch of their own (catalog/comments.py).
 COMMENTS_URL = REPO_URL.replace("https://github.com/", "https://raw.githubusercontent.com/") + "/comments-data/v1/"
 # The website: the repository's GitHub Pages site, under its own domain.
@@ -837,6 +876,9 @@ def build_site(out: Path, apps_dir: Path, report: Report, base: str = DEFAULT_BA
         "i18n": i18n,
         "fonts": e(FONT_URL.format(families=theme_obj.fonts)),
         "theme_color": theme_obj.color,
+        "catalog_name": e(CATALOG_NAME),
+        "maintainer": e(MAINTAINER),
+        "maintainer_url": e(MAINTAINER_URL),
         "commit": e(commit),
         "commit_short": e(commit[:7]),
         "commit_time": _commit_time_html(source_commit_time(commit)),
@@ -945,7 +987,7 @@ def build_site(out: Path, apps_dir: Path, report: Report, base: str = DEFAULT_BA
     # Feed for the console store and other clients.
     feed = {
         "schema": FEED_SCHEMA,
-        "name": "PS5 Homebrew Catalog",
+        "name": CATALOG_NAME,
         "homepage": site_url + base,
         "source": {"repository": REPO_URL, "commit": commit},
         "apps": [

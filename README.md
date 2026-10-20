@@ -31,6 +31,28 @@ The template lists one app, ProsperoStore itself (`apps/PPSA99000.json`), so the
 something to show and a store that reads only your catalog can still update itself. Replace or
 remove it as you like.
 
+## Name your catalog
+
+`catalog.json` at the root of the repository names the catalog:
+
+```json
+{
+  "name": "Homebrew catalog base",
+  "maintainer": "",
+  "repository": ""
+}
+```
+
+- `name` is what the website calls itself: the brand in its header, the site name in link
+  previews and the `name` of the older `catalog/v1.json` feed. Empty means the repository's name.
+- `maintainer` is the GitHub account named in the footer ("Maintained by"). Empty means the
+  repository's owner, which is right for most catalogs.
+- `repository` is the catalog's GitHub address, only needed for a build outside GitHub Actions
+  from a checkout without a GitHub `origin`. The CI always knows its own repository.
+
+The footer's "Built from" link and commit are filled in at build time from the repository and
+the commit the CI builds, so neither needs editing.
+
 ## Add an app
 
 One file per app in `apps/`, named after its title ID: `apps/PPSA01234.json`.
