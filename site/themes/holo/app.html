@@ -1,0 +1,53 @@
+<section class="wrap showcase" aria-labelledby="app-title">
+  <a class="back" href="$base">← All apps</a>
+  <div class="showcase__grid">
+    <div class="showcase__card">
+      <div class="holo holo--$kind holo--big" data-tilt="12">
+        <span class="holo__frame">
+          <span class="holo__top"><span class="holo__name">$name</span><span class="holo__type">$kind_label</span></span>
+          <span class="holo__art"><img src="$icon" alt="$name icon" width="512" height="512"></span>
+          <span class="holo__strip"><span>$titleid · $version_label</span><span>$format</span></span>
+          <span class="holo__text">$description</span>
+          <span class="holo__bottom"><span>$author</span><span>$updated</span></span>
+        </span>
+        <span class="holo__foil" aria-hidden="true"></span>
+        <span class="holo__glare" aria-hidden="true"></span>
+      </div>
+    </div>
+    <div class="showcase__info">
+      <p class="kicker">$kind_label · $titleid</p>
+      <h1 class="showcase__title" id="app-title">$name</h1>
+      <p class="byline">by $author</p>
+      <p class="lead">$description</p>
+      $shared_note
+      <div class="actions">
+        <a class="btn btn--foil btn--lg" href="$artifact_url" rel="nofollow">Download</a>
+        <a class="btn btn--ghost btn--lg" href="$source_repo">Source code</a>
+      </div>
+      <dl class="attrs">
+        <div><dt>Version</dt><dd>$version</dd></div>
+        <div><dt>Updated</dt><dd><time datetime="$updated_iso">$updated</time></dd></div>
+        <div><dt>Format</dt><dd>$format_label</dd></div>
+        <div><dt>License</dt><dd>$license</dd></div>
+        <div><dt>Title ID</dt><dd>$titleid</dd></div>
+        <div><dt>Release</dt><dd><a href="$release_url">$tag</a></dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="panels">
+    <section class="panel" aria-labelledby="install-title">
+      <h2 id="install-title">Install</h2>
+      <p class="note note--info">Read the <a href="$release_url">release notes</a> and the <a href="$source_repo">project's documentation</a> first. Some apps need extra setup, such as a payload, configuration or additional files, and the developer's instructions take precedence over the general steps below.</p>
+      <ol class="steps">
+$steps
+      </ol>
+    </section>
+    <section class="panel" aria-labelledby="verify-title">
+      <h2 id="verify-title">Verify</h2>
+      <p class="muted">This listing is pinned to one exact file. <code>sha256sum $artifact_name</code> must print:</p>
+      <div class="hash"><code>$sha256</code><button type="button" class="btn btn--ghost btn--sm copy" data-copy="$sha256">Copy</button></div>
+      <p class="note">This app and its content are the responsibility of its developer, $author. Homebrew runs with elevated access on a jailbroken console; install only what you trust.</p>
+    </section>
+  </div>
+</section>

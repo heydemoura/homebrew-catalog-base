@@ -1,0 +1,20 @@
+<section class="wrap binder" id="apps" aria-labelledby="apps-title">
+  <div class="binder__head">
+    <div>
+      <h1 class="binder__title" id="apps-title">PS5 homebrew</h1>
+      <p class="binder__intro">Native PS5 apps, games and tools only. Downloads come from each developer's GitHub release, pinned by SHA-256.</p>
+    </div>
+    <span class="binder__count" data-count="{n} app{s}" aria-live="polite">$app_count apps</span>
+  </div>
+$toolbar
+  <ul class="cards" data-grid data-view-panel="cards">
+$cards
+  </ul>
+  <div class="list-head" data-view-panel="list">
+    <div class="list-head__cols"><span></span><button type="button" data-sort-key="name">Name</button><button type="button" data-sort-key="kind">Type</button><button type="button" data-sort-key="titleid">Title ID</button><span>Version</span><button type="button" data-sort-key="updated">Updated</button><button type="button" class="col-dev" data-sort-key="author">Developer</button></div>
+  </div>
+  <ul class="list" data-grid data-view-panel="list">
+$rows
+  </ul>
+  <p class="empty" data-empty hidden>No apps match these filters.</p>
+</section>

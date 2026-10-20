@@ -1,0 +1,61 @@
+name: Problem with a listing
+description: A download, icon or detail of a listed app is broken or wrong.
+body:
+  - type: input
+    id: titleid
+    attributes:
+      label: Title ID
+      placeholder: PPSA01234
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Problem
+      options:
+        - Download is missing or fails
+        - Icon is missing or wrong
+        - Name, description, category, author or license is wrong
+        - App doesn't work as described
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What happened, and what did you expect? Include firmware and loader versions if relevant.
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: "PS5 system software version"
+    validations:
+      required: false
+  - type: dropdown
+    id: enabler
+    attributes:
+      label: "Homebrew enabler"
+      options:
+        - "etaHEN"
+        - "kstuff-lite"
+        - "onionHEN"
+        - "Other (name it below)"
+        - "Not sure"
+    validations:
+      required: false
+  - type: input
+    id: enabler_version
+    attributes:
+      label: "Homebrew enabler version"
+      description: "For example etaHEN 2.5b. Name it here if you chose Other."
+    validations:
+      required: false
+  - type: input
+    id: shadowmount
+    attributes:
+      label: "ShadowMountPlus version"
+      description: "Leave empty if you do not use it"
+    validations:
+      required: false

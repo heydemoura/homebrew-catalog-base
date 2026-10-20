@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PS5 Homebrew — TV</title>
+<meta name="description" content="The PS5 homebrew catalog for the TV: browse every app with the controller.">
+<link rel="canonical" href="$canonical">
+<meta name="theme-color" content="$theme_color">
+<link rel="icon" href="${base}favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="$fonts">
+<link rel="stylesheet" href="$tv_css">
+<script src="$i18n"></script>
+<script src="$tv_qr" defer></script>
+<script src="$tv_js" defer></script>
+</head>
+<body class="tv" data-base="$base" data-comments="$comments_url">
+<div class="tv-bg" aria-hidden="true"></div>
+<header class="tv-top">
+  <a class="tv-logo" href="$base" tabindex="-1"><span class="tv-logo__mark" aria-hidden="true"></span><span class="tv-logo__word">Homebrew<em data-i18n="brand.from">PS5 catalog</em></span></a>
+  <p class="tv-top__status" id="tv-status" aria-live="polite"></p>
+</header>
+<nav class="tv-rail" id="tv-rail" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
+$rail
+  <button type="button" class="tv-rail__item tv-rail__item--action" data-action="sort" tabindex="-1" data-i18n="tv.sort">Sort<span id="tv-sort">Name</span></button>
+  <button type="button" class="tv-rail__item tv-rail__item--action" data-action="lang" tabindex="-1" data-i18n="lang.label">Language<span id="tv-lang"></span></button>
+  <a class="tv-rail__item tv-rail__item--action" data-action="exit" href="${base}?layout=web" tabindex="-1" data-i18n="tv.exit">Exit TV mode</a>
+</nav>
+<main class="tv-main" id="tv-main">
+  <h1 class="tv-heading" id="tv-heading">All</h1>
+  <div class="tv-grid" id="tv-grid" role="list"></div>
+  <p class="tv-empty" id="tv-empty" hidden data-i18n="tv.empty">Nothing here yet.</p>
+</main>
+<section class="tv-detail" id="tv-detail" role="dialog" aria-modal="true" aria-labelledby="tv-detail-name" hidden></section>
+<footer class="tv-hints">
+  <p class="tv-credit"><span data-i18n="tv.credit" data-v-short="$commit_short">Maintained by darkxex, created by BlackBearReloaded · Built from $commit_short</span>$commit_time</p>
+  <span aria-hidden="true"><i class="tv-glyph tv-glyph--dpad"></i><b id="tv-hint-move" data-i18n="tv.hint.move">Move</b></span>
+  <span aria-hidden="true"><i class="tv-glyph tv-glyph--cross">✕</i><b id="tv-hint-cross" data-i18n="tv.hint.open">Open</b></span>
+  <span aria-hidden="true"><i class="tv-glyph tv-glyph--circle">○</i><b data-i18n="tv.hint.back">Back</b></span>
+  <span data-grid-only aria-hidden="true"><i class="tv-glyph tv-glyph--triangle">△</i><b data-i18n="tv.hint.sort">Sort</b></span>
+  <span data-grid-only aria-hidden="true"><i class="tv-glyph tv-glyph--square">□</i><b data-i18n="tv.hint.menu">Menu</b></span>
+</footer>
+<noscript><p class="tv-noscript">TV mode needs JavaScript. <a href="$base">Open the regular catalog</a>.</p></noscript>
+<script type="application/json" id="tv-data">$data</script>
+</body>
+</html>

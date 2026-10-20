@@ -1,0 +1,80 @@
+<article class="page tone-$id" data-accent="$accent" aria-labelledby="app-title">
+  <div class="page__art" aria-hidden="true"><img src="$ambient" alt="" width="96" height="54"></div>
+  <div class="page__shade" aria-hidden="true"></div>
+  <div class="page__inner">
+    <div class="page__main">
+      <a class="back" href="$base"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="app.back">All apps</span></a>
+      <div class="page__cover"><img src="$icon" alt="$name icon" width="512" height="512"><span class="page__sheen" aria-hidden="true"></span></div>
+      <p class="kicker kicker--plain"><a href="${base}?category=$category" data-i18n="cat.$category">$category_label</a></p>
+      <h1 class="page__title" id="app-title" translate="no">$name</h1>
+      <p class="page__line">$author<span class="sep" aria-hidden="true">·</span><span data-i18n="app.updated">Updated</span> <time datetime="$updated_iso">$updated</time></p>
+      <ul class="chips" aria-label="Release facts" data-i18n-attr="aria-label:app.facts">
+        <li>$version_label</li>
+        <li>$size_label</li>
+        <li data-license>$license</li>
+        <li class="chips__caps">$format</li>
+        $shared_chip
+      </ul>
+      $shared_note
+      <p class="react">
+        <a class="react__button" data-react="likes" href="$comments_search"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5l7 8h-4.5v6h-5v-6H5z" fill="currentColor"/></svg><span data-i18n="app.like">Like</span><b data-count="likes"></b></a>
+        <a class="react__button" data-react="comments" href="$comments_search"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-6l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span data-i18n="app.comment">Comment</span><b data-count="comments"></b></a>
+      </p>
+      <div class="article">
+        <p class="article__lead">$description</p>
+
+        $notes
+
+        <h2 id="comments-title" data-i18n="comments.title">Comments</h2>
+        <section class="comments" data-comments-for="$id" aria-labelledby="comments-title">
+          <p class="comments__none" data-comments-none data-i18n-html="comments.none" data-v-href="$comments_search">No comments yet. <a data-comments-link href="$comments_search">Write the first one on GitHub</a>.</p>
+          <ul class="comments__list" data-comments-list hidden></ul>
+          <p class="comments__more" data-comments-more hidden><a data-comments-link href="$comments_search" data-i18n="comments.more">Comment on GitHub</a></p>
+        </section>
+
+        $safety
+
+        <h2 id="install-title" data-i18n="install.title">Install</h2>
+        <p class="article__note" data-i18n-html="install.note" data-v-release="$release_url" data-v-repo="$source_repo">Read the <a href="$release_url">release notes</a> and the <a href="$source_repo">project's documentation</a> first. Some apps need extra setup, such as a payload, configuration or additional files, and the developer's instructions take precedence over the general steps below.</p>
+        <ol class="steps">
+$steps
+        </ol>
+
+        <h2 id="verify-title" data-i18n="verify.title">Verify</h2>
+        <p data-i18n-html="verify.text" data-v-file="$artifact_name">This listing is pinned to one exact file. <code>sha256sum $artifact_name</code> must print:</p>
+        <div class="hash"><code>$sha256</code><button type="button" class="copy" data-copy="$sha256" data-i18n="copy">Copy</button></div>
+        <p class="article__note" data-i18n-html="verify.note" data-v-author="$author">This app and its content are the responsibility of its developer, $author. Homebrew runs with elevated access on a jailbroken console; install only what you trust.</p>
+
+        <h2 id="source-title" data-i18n="source.title">Source</h2>
+        <p><a href="$source_repo">$source_short</a><span class="sep" aria-hidden="true">·</span><a href="$release_url" data-i18n="source.release" data-v-tag="$tag">Release $tag</a></p>
+
+        <h2 id="details-title" data-i18n="details.title">Details</h2>
+        <dl class="facts">
+          <div><dt data-i18n="d.titleid">Title ID</dt><dd>$titleid</dd></div>
+          <div><dt data-i18n="d.category">Category</dt><dd data-i18n="cat.$category">$category_label</dd></div>
+          <div><dt data-i18n="d.version">Version</dt><dd>$version</dd></div>
+          <div><dt data-i18n="d.format">Format</dt><dd data-i18n="fmt.$format">$format_label</dd></div>
+          <div><dt data-i18n="d.license">License</dt><dd data-license>$license</dd></div>
+          <div><dt data-i18n="d.file">File</dt><dd>$artifact_name</dd></div>
+          <div><dt data-i18n="d.updated">Updated</dt><dd><time datetime="$updated_iso">$updated</time></dd></div>
+        </dl>
+      </div>
+    </div>
+    <aside class="side" aria-label="Get this app" data-i18n-attr="aria-label:panel.get">
+      <div class="panel">
+        <p class="panel__kicker" data-i18n="panel.kicker">Get this app</p>
+        <div class="panel__ring" aria-hidden="true"><svg viewBox="0 0 48 48" width="56" height="56"><path d="M24 8v30M24 38l-12-12M24 38l12-12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <p class="panel__headline" data-i18n="panel.ready">Ready</p>
+        <p class="panel__note" data-i18n="panel.note">Straight from the developer's GitHub release</p>
+        <p class="panel__where">$artifact_name</p>
+        <a class="button button--gold" href="$artifact_url" rel="nofollow"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 4v12M12 16l-5-5M12 16l5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="panel.download">Download</span></a>
+        <a class="button button--line" href="$source_repo" data-i18n="panel.source">Source code</a>
+        <p class="panel__reason" data-i18n="panel.reason">Pinned to one exact file by its SHA-256. Compare it before you install.</p>
+      </div>
+      <a class="store" href="https://github.com/darkxex/ProsperoStore/releases">
+        <span class="store__mark" aria-hidden="true"></span>
+        <span class="store__text"><b data-i18n="store.q">On your PS5?</b><span data-i18n="store.text">Install and update it from the couch with ProsperoStore.</span></span>
+      </a>
+    </aside>
+  </div>
+</article>

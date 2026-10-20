@@ -1,0 +1,119 @@
+"""Verify a record against GitHub without downloading its artifact.
+
+GitHub computes a SHA-256 digest for every release asset and reports it in the
+API. Matching it against the record's sha256 ties the reviewed listing to the
+exact bytes; a replaced asset gets a new digest and stops matching.
+"""
+
+from __future__ import annotations
+
+from . import artifacts, facts
+from .github import GitHub, GitHubError
+from .records import UNLICENSED, Record
+from .report import Report
+
+
+def verify_record(record: Record, github: GitHub, report: Report, previous: Record | None = None) -> None:
+    """Check a record online. `previous` is the record it replaces, when a pull request changes a listing."""
+    name = f"apps/{record.path.name}"
+    data = record.data
+    if record.reserved:
+        _verify_reservation(name, record, github, report)
+        return
+    try:
+        repo = github.repo(record.owner, record.repo)
+        if repo is None or repo.get("private"):
+            report.error(name, f"source_repo {data['source_repo']} is not a public GitHub repository")
+            return
+        canonical = f"https://github.com/{repo['full_name']}"
+        if canonical != data["source_repo"]:
+            report.error(name, f"source_repo must use the canonical URL {canonical}")
+            return
+        if repo.get("archived"):
+            report.warning(name, "source repository is archived")
+        _check_license(name, data["license"], repo, report)
+
+        release = github.release_by_tag(record.owner, record.repo, record.tag)
+        if release is None or release.get("draft"):
+            report.error(name, f"no published release is tagged {record.tag!r}")
+            return
+        asset = next((a for a in release.get("assets", []) if a.get("name") == record.asset_name), None)
+        if asset is None:
+            report.error(name, f"release {record.tag!r} has no asset named {record.asset_name!r}")
+            return
+        if asset.get("size", 0) > artifacts.MAX_ARTIFACT_BYTES:
+            report.error(name, f"artifact is {asset['size']} bytes; the limit is {artifacts.MAX_ARTIFACT_BYTES}")
+            return
+        github_digest = asset.get("digest")
+        if not github_digest:
+            report.error(name, "GitHub reports no digest for this asset; upload it to a new release "
+                               "so GitHub computes one")
+            return
+        if github_digest != f"sha256:{data['sha256']}":
+            report.error(name, f"sha256 does not match the release asset; GitHub reports {github_digest}")
+            return
+        report.notice(name, f"release asset matches sha256 ({asset.get('size', 0):,} bytes, not downloaded)")
+        _check_content_version(name, record, previous, github, report)
+    except GitHubError as error:
+        report.error(name, str(error))
+        return
+
+    _verify_icon(name, data, report)
+
+
+def _check_content_version(name: str, record: Record, previous: Record | None, github: GitHub,
+                           report: Report) -> None:
+    """Consoles find updates by comparing content versions (docs/api.md); warn when they can't."""
+    version, where = facts.find_content_version(record, github)
+    if version is None:
+        report.warning(name, "no contentVersion found for this release (no sce_sys/param.json for this title at "
+                             "the tag): consoles can't check this app for updates")
+        return
+    report.notice(name, f"contentVersion {version} (from {where})")
+    if previous is None or previous.reserved or previous.data["sha256"] == record.data["sha256"]:
+        return
+    listed, _ = facts.find_content_version(previous, github)
+    old_key, new_key = facts.content_version_key(listed), facts.content_version_key(version)
+    if old_key and new_key <= old_key:
+        report.warning(name, f"contentVersion {version} is not higher than the listed release's {listed}: "
+                             "consoles won't see this release as an update")
+
+
+def _verify_reservation(name: str, record: Record, github: GitHub, report: Report) -> None:
+    """Reservations have no repository, release or icon yet; there is nothing online to check."""
+    report.notice(name, "reservation: release checks run when it becomes a release")
+
+
+def _check_license(name: str, license_value: str, repo: dict, report: Report) -> None:
+    detected = (repo.get("license") or {}).get("spdx_id")
+    if not detected or detected == "NOASSERTION":
+        if license_value == UNLICENSED:
+            return
+        report.warning(name, "GitHub could not detect the repository license; confirm it manually")
+    elif not any(token == detected or token.startswith(detected + "-") for token in license_value.split()):
+        report.error(name, f"license {license_value!r} does not match the repository license {detected!r}")
+
+
+def _verify_icon(name: str, record_data: dict, report: Report) -> None:
+    field = "icon_url" if record_data.get("icon_url") else "icon_member"
+    try:
+        data = artifacts.fetch_icon(record_data)
+    except (artifacts.DownloadError, OSError) as error:
+        report.error(name, f"{field} could not be fetched: {error}")
+        return
+    image_format, warnings = artifacts.inspect_icon(data)
+    if image_format is None:
+        report.error(name, f"{field} is not a PNG, JPEG or WebP image")
+    for warning in warnings:
+        report.warning(name, warning)
+
+
+def newer_release(record: Record, github: GitHub) -> str | None:
+    """Return the tag of the newest published release when it differs from the record."""
+    if record.reserved:
+        return None
+    for release in github.releases(record.owner, record.repo):
+        if not release.get("draft"):
+            tag = release.get("tag_name")
+            return tag if tag and tag != record.tag else None
+    return None
